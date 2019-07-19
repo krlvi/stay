@@ -1,5 +1,10 @@
 package graph
 
+import (
+	"errors"
+	"fmt"
+)
+
 type stringSet map[string]struct{}
 
 type Graph struct {
@@ -12,8 +17,18 @@ func (g Graph) Push(node string) {
 	}
 }
 
-func (g Graph) Connect(from string, to string) {
+func (g Graph) Connect(from string, to string) error {
+	if from == to {
+		return errors.New("can't connect to self")
+	}
+	if _, x := g.nodes[from]; !x {
+		return errors.New("from node must be in the graph")
+	}
+	if _, x := g.nodes[to]; !x {
+		return errors.New("to node must be in the graph")
+	}
 	g.nodes[from][to] = struct{}{}
+	return nil
 }
 
 func (g Graph) edgesFrom(from string) stringSet {
@@ -85,7 +100,10 @@ func transpose(g Graph) Graph {
 	}
 	for node := range g.nodes {
 		for e := range g.edgesFrom(node) {
-			t.Connect(e, node)
+			conErr := t.Connect(e, node)
+			if conErr != nil {
+				fmt.Println(conErr)
+			}
 		}
 	}
 	return t

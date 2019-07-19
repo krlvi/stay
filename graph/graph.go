@@ -51,7 +51,7 @@ func FindStronglyConnectedComponents(g Graph) map[int][]string {
 			visitOrder = visitOrder[:n]
 			continue
 		}
-		markReachableNodes(node, &g, &result, i)
+		markReachableNodes(node, g, result, i)
 		i++
 		visitOrder = visitOrder[:n]
 	}
@@ -63,11 +63,11 @@ func FindStronglyConnectedComponents(g Graph) map[int][]string {
 	return scc
 }
 
-func markReachableNodes(node string, g *Graph, result *map[string]int, label int) {
-	if _, x := (*result)[node]; x {
+func markReachableNodes(node string, g Graph, result map[string]int, label int) {
+	if _, x := result[node]; x {
 		return
 	}
-	(*result)[node] = label
+	result[node] = label
 	for e := range g.edgesFrom(node) {
 		markReachableNodes(e, g, result, label)
 	}
@@ -77,16 +77,16 @@ func dfsVisitOrder(g Graph) []string {
 	var stack = make([]string, 0)
 	var visited = make(stringSet)
 	for n := range g.nodes {
-		recExplore(n, &g, &stack, &visited)
+		recExplore(n, &g, &stack, visited)
 	}
 	return stack
 }
 
-func recExplore(node string, g *Graph, stack *[]string, visited *stringSet) {
-	if _, x := (*visited)[node]; x {
+func recExplore(node string, g *Graph, stack *[]string, visited stringSet) {
+	if _, x := visited[node]; x {
 		return
 	}
-	(*visited)[node] = struct{}{}
+	visited[node] = struct{}{}
 	for e := range g.edgesFrom(node) {
 		recExplore(e, g, stack, visited)
 	}
